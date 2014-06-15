@@ -1,0 +1,36 @@
+Server {
+  Port = 80
+  SourceRoot = /var/www
+}
+ 
+VirtualHost {
+ * {
+   Pattern = .*
+   RewriteRules {
+      * {
+        pattern = .?
+ 
+	# app bootstrap
+        to = index.php
+ 
+        # append the original query string
+        qsa = true
+      }
+   }
+ }
+}
+ 
+StaticFile {
+  Extensions {
+    css = text/css
+    gif = image/gif
+    html = text/html
+    jpe = image/jpeg
+    jpeg = image/jpeg
+    jpg = image/jpeg
+    png = image/png
+    tif = image/tiff
+    tiff = image/tiff
+    txt = text/plain
+  }
+}
