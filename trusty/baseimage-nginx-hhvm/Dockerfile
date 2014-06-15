@@ -16,9 +16,6 @@ RUN apt-get install -y wget nano
 RUN wget -O - http://dl.hhvm.com/conf/hhvm.gpg.key | sudo apt-key add -
 RUN echo deb http://dl.hhvm.com/ubuntu trusty main | sudo tee /etc/apt/sources.list.d/hhvm.list
 
-# add nginx repository
-RUN add-apt-repository -y ppa:nginx/stable
-
 # Run after setting repositories
 RUN apt-get update -y
 
