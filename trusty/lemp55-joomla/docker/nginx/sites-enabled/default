@@ -1,0 +1,52 @@
+upstream app_backend {
+        server unix:/var/run/php5-fpm.sock1 weight=100 max_fails=5 fail_timeout=5;
+        server unix:/var/run/php5-fpm.sock2 weight=100 max_fails=5 fail_timeout=5;
+}
+
+server {
+        listen 80 default_server;
+        server_name _;
+        server_name_in_redirect off;
+
+        root /var/www/app/public;
+        index index.html index.htm index.php;
+
+        location ~ "\.pagespeed\.([a-z]\.)?[a-z]{2}\.[^.]{10}\.[^.]+" { add_header "" ""; }
+        location ~ "^/ngx_pagespeed_static/" { }
+        location ~ "^/ngx_pagespeed_beacon" { }
+        location /ngx_pagespeed_statistics { allow 127.0.0.1; deny all; }
+        location /ngx_pagespeed_global_statistics { allow 127.0.0.1; deny all; }
+        location /ngx_pagespeed_message { allow 127.0.0.1; deny all; }
+        location /pagespeed_console { allow 127.0.0.1; deny all; }
+
+        # Support Clean (aka Search Engine Friendly) URLs
+        location / {
+                try_files $uri $uri/ /index.php?$args;
+        }
+
+        # deny running scripts inside writable directories
+        location ~* /(images|cache|media|logs|tmp)/.*\.(php|pl|py|jsp|asp|sh|cgi)$ {
+                return 403;
+                error_page 403 /403_error.html;
+        }
+
+        location ~ \.php$ {
+            fastcgi_pass app_backend;
+            fastcgi_index index.php;
+            include fastcgi_params;
+            fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+            fastcgi_intercept_errors on;
+
+            include /etc/nginx/fastcgi_params;
+        }
+
+        # caching of files 
+        location ~* \.(ico|pdf|flv)$ {
+                expires 1y;
+        }
+
+        location ~* \.(js|css|png|jpg|jpeg|gif|swf|xml|txt)$ {
+                expires 14d;
+        }
+
+}
