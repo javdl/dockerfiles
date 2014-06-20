@@ -1,19 +1,33 @@
 # runnable base
 FROM ubuntu:trusty
 MAINTAINER Joost van der Laan <joostvanderlaan@gmail.com>
+##RUN echo "deb http://archive.ubuntu.com/ubuntu trusty main universe" > /etc/apt/sources.list
+RUN apt-get update
+RUN apt-get -y upgrade
+
+# Keep upstart from complaining
+RUN dpkg-divert --local --rename --add /sbin/initctl
+RUN ln -sf /bin/true /sbin/initctl
+
+# Let the conatiner know that there is no tty
+ENV DEBIAN_FRONTEND noninteractive
+
+# Otherwise you cannot add repositories
+RUN apt-get install -y software-properties-common python-software-properties
+RUN apt-get install -y wget nano openssl libssl-dev
 
 # REPOS
-RUN apt-get -y update && locale-gen en_GB.UTF-8
-RUN echo "Europe/London" | tee /etc/timezone; dpkg-reconfigure --frontend noninteractive tzdata
-RUN apt-get install -y -q python-software-properties
-#RUN add-apt-repository -y "deb http://archive.ubuntu.com/ubuntu $(lsb_release -sc) universe"
-#RUN add-apt-repository -y "deb http://archive.ubuntu.com/ubuntu $(lsb_release -sc) multiverse"
-#RUN add-apt-repository -y "deb http://archive.ubuntu.com/ubuntu $(lsb_release -sc)-updates multiverse"
+## RUN apt-get -y update && locale-gen en_GB.UTF-8
+## RUN echo "Europe/London" | tee /etc/timezone; dpkg-reconfigure --frontend noninteractive tzdata
+##RUN apt-get install -y -q python-software-properties
+##RUN add-apt-repository -y "deb http://archive.ubuntu.com/ubuntu $(lsb_release -sc) universe"
+##RUN add-apt-repository -y "deb http://archive.ubuntu.com/ubuntu $(lsb_release -sc) multiverse"
+##RUN add-apt-repository -y "deb http://archive.ubuntu.com/ubuntu $(lsb_release -sc)-updates multiverse"
 
-RUN apt-get -y update
+#RUN apt-get -y update
 
 # BASICS
-RUN DEBIAN_FRONTEND=noninteractive apt-get install -y -q vim nano curl git subversion make wget build-essential g++ sendmail unzip logrotate
+RUN apt-get install -y -q vim nano curl git subversion make wget build-essential g++ sendmail unzip logrotate python-setuptools
 
 ## Nginx
 RUN wget -q http://nginx.org/keys/nginx_signing.key -O- | apt-key add -
@@ -67,11 +81,44 @@ ADD ./docker/php5/fpm/pool.d/www2.conf /etc/php5/fpm/pool.d/www2.conf
 ADD ./docker/php5/mods-available/opcache.ini /etc/php5/mods-available/opcache.ini
 RUN mkdir -p /var/log/app; chmod 664 /var/log/app/; chown user:www-data /var/log/app/
 
-# Supervisord
-RUN mkdir -p /var/log/supervisor
 
+
+
+
+# Pull Laravel project from github
+#RUN rm -rf /var/www/vhosts/laravel
+RUN git clone https://github.com/joomla/joomla-cms.git /var/www
+
+# ADD . /var/www
+
+#RUN mkdir /var/www
+RUN chown -R www-data:www-data /var/www
+
+# Phpinfo for testing purposes, with hiphop it will only show text: Hiphop
+RUN echo "<?php phpinfo(); ?>" > /var/www/phpinfo.php
+
+
+
+
+# Supervisor Install
+RUN /usr/bin/easy_install supervisor
+
+# Supervisor Install
+#RUN /usr/bin/easy_install supervisor
+#RUN apt-get -y install supervisor
+
+# Supervisord
+#RUN mkdir -p /var/log/supervisor
 
 # SSH
 #ADD ./docker/ssh/sshd_config /etc/ssh/sshd_config
+ADD ./docker/supervisord.conf /etc/supervisord.conf
 
-# add supervisor files, start.sg etc.....
+# Initialization and Startup Script
+ADD ./docker/start.sh /start.sh
+RUN chmod 755 /start.sh
+
+# private expose
+EXPOSE 80
+
+CMD ["/bin/bash", "/start.sh"]

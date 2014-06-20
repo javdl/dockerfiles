@@ -8,7 +8,7 @@ server {
         server_name _;
         server_name_in_redirect off;
 
-        root /var/www/app/public;
+        root /var/www;
         index index.html index.htm index.php;
 
         location ~ "\.pagespeed\.([a-z]\.)?[a-z]{2}\.[^.]{10}\.[^.]+" { add_header "" ""; }
