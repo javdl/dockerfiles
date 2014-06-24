@@ -1,7 +1,7 @@
 FROM ubuntu:trusty
 MAINTAINER Joost van der Laan <joostvanderlaan@gmail.com>
 RUN echo "deb http://archive.ubuntu.com/ubuntu precise main universe" > /etc/apt/sources.list
-RUN apt-get update
+RUN apt-get -y update
 RUN apt-get -y upgrade
 
 # Keep upstart from complaining
@@ -14,7 +14,7 @@ RUN apt-get install -y software-properties-common python-software-properties
 # add php5.5 repository
 #RUN add-apt-repository -y ppa:nginx/stable
 #RUN add-apt-repository -y ppa:ondrej/php5 > /dev/null 2>&1 # dirty fix for "invalid UTF-8 in string"
-#RUN apt-get update -y
+RUN apt-get -y update
 
 # Basic Requirements
 RUN apt-get -y install nginx php5-fpm php5-mysql pwgen python-setuptools curl git unzip supervisor
@@ -45,7 +45,9 @@ RUN sed -i -e "s/;daemonize\s*=\s*yes/daemonize = no/g" /etc/php5/fpm/php-fpm.co
 RUN find /etc/php5/cli/conf.d/ -name "*.ini" -exec sed -i -re 's/^(\s*)#(.*)/\1;\2/g' {} \;
 # ADD ./opcache.ini /etc/php5/fpm/conf.d/opcache.ini
 
+RUN mkdir /var/www
 #RUN git clone https://github.com/joomla/joomla-cms.git /var/www
+RUN chown -R www-data:www-data /var/www
 
 # Add your nginx config
 ADD ./docker/nginx-site.conf /etc/nginx/sites-enabled/default
