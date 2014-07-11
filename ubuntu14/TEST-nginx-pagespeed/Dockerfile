@@ -38,7 +38,7 @@ ENV MODULESDIR /usr/src/nginx-modules
 RUN cd /usr/src/ && wget http://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz && tar xf nginx-${NGINX_VERSION}.tar.gz && rm -f nginx-${NGINX_VERSION}.tar.gz
 
 # Force OpenSSL 1.0.1
-RUN cd /usr/src && wget http://www.openssl.org/source/openssl-1.0.1e.tar.gz && tar xvzf openssl-1.0.1e.tar.gz
+RUN cd /usr/src && wget http://www.openssl.org/source/openssl-1.0.1h.tar.gz && tar xvzf openssl-1.0.1h.tar.gz
 
 # Install additional modules
 RUN apt-get update && apt-get install -y build-essential zlib1g-dev libpcre3 libpcre3-dev unzip
@@ -87,7 +87,7 @@ RUN cd /usr/src/nginx-${NGINX_VERSION} && ./configure \
 	--with-ipv6 \
 	--with-sha1=/usr/include/openssl \
  	--with-md5=/usr/include/openssl \
-	--with-openssl='../openssl-1.0.1e' \
+	--with-openssl='../openssl-1.0.1h' \
 	--add-module=${MODULESDIR}/ngx_pagespeed-${PAGESPEED_VERSION}-beta \
 	--add-module=${MODULESDIR}/ngx_devel_kit-${NGX_DEVEL_KIT_VERSION} \
     --add-module=${MODULESDIR}/set-misc-nginx-module-${NGX_SET_MISC_VERSION}
