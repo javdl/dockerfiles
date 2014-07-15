@@ -30,7 +30,7 @@ RUN apt-get update &&  apt-get install nano -y
 
 # Install Nginx from a tarball
 # Install build tools for nginx
-ENV NGINX_VERSION 1.4.7
+ENV NGINX_VERSION 1.6.0
 ENV MODULESDIR /usr/src/nginx-modules
 RUN cd /usr/src/ && wget http://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz && tar xf nginx-${NGINX_VERSION}.tar.gz && rm -f nginx-${NGINX_VERSION}.tar.gz
 
