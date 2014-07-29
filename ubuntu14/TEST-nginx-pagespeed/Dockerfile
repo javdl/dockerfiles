@@ -115,6 +115,9 @@ ADD nginx /etc/nginx/
 # Turn off nginx starting as a daemon
 RUN echo "daemon off;" >> /etc/nginx/nginx.conf
 
+RUN mkdir /var/ngx_pagespeed_cache
+RUN chown -R www-data:www-data /var/ngx_pagespeed_cache
+
 # Purge APT cache
 RUN apt-get clean all
 
