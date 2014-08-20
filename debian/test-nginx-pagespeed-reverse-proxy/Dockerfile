@@ -1,5 +1,5 @@
 FROM google/debian:wheezy
-MAINTAINER David Gageot <david@gageot.net>
+MAINTAINER Joost van der Laan <joostvanderlaan@gmail.com>
 
 ENV DEBIAN_FRONTEND noninteractive
 
@@ -26,9 +26,10 @@ RUN rm -Rf /tmp/nginx-1.7.1
 EXPOSE 80
 EXPOSE 443
 
-VOLUME ["/etc/nginx/sites-enabled"]
+# VOLUME ["/etc/nginx/sites-enabled"]
 WORKDIR /etc/nginx/
 CMD ["/usr/sbin/nginx"]
 
 # Configure nginx
 COPY nginx.conf /etc/nginx/conf/nginx.conf
+COPY sites-enabled/default /etc/nginx/conf/sites-enabled/default
