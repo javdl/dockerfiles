@@ -1,36 +1,32 @@
-FROM ubuntu:14.04
-MAINTAINER Joost van der Laan joostvanderlaan@gmail.com
+apt-get update &&
+apt-get install -y wget &&
+apt-key adv --keyserver keyserver.ubuntu.com --recv-keys ABF5BD827BD9BF62 &&
+echo deb http://nginx.org/packages/mainline/ubuntu trusty nginx > /etc/apt/sources.list.d/nginx-stable-trusty.list &&
+echo deb-src http://nginx.org/packages/mainline/ubuntu trusty nginx > /etc/apt/sources.list.d/nginx-stable-trusty.list &&
 
-# Install Nginx.
-RUN apt-get update
-RUN apt-get install -y wget
-RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys ABF5BD827BD9BF62
-RUN echo deb http://nginx.org/packages/mainline/ubuntu trusty nginx > /etc/apt/sources.list.d/nginx-stable-trusty.list
-RUN echo deb-src http://nginx.org/packages/mainline/ubuntu trusty nginx > /etc/apt/sources.list.d/nginx-stable-trusty.list
+apt-get update &&  apt-get install nano -y &&
+apt-get upgrade -y &&
 
-RUN apt-get update &&  apt-get install nano -y
-RUN apt-get upgrade -y
+NGINX_VERSION=1.6.1 &&
+OPENSSL_VERSION=openssl-1.0.1h &&
+MODULESDIR=/usr/src/nginx-modules &&
+NPS_VERSION=1.8.31.4 &&
 
-ENV NGINX_VERSION 1.6.1
-ENV OPENSSL_VERSION openssl-1.0.1h
-ENV MODULESDIR /usr/src/nginx-modules
-ENV NPS_VERSION 1.8.31.4
+cd /usr/src/ && wget http://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz && tar xf nginx-${NGINX_VERSION}.tar.gz && rm -f nginx-${NGINX_VERSION}.tar.gz &&
+cd /usr/src/ && wget http://www.openssl.org/source/${OPENSSL_VERSION}.tar.gz && tar xvzf ${OPENSSL_VERSION}.tar.gz &&
 
-RUN cd /usr/src/ && wget http://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz && tar xf nginx-${NGINX_VERSION}.tar.gz && rm -f nginx-${NGINX_VERSION}.tar.gz
-RUN cd /usr/src/ && wget http://www.openssl.org/source/${OPENSSL_VERSION}.tar.gz && tar xvzf ${OPENSSL_VERSION}.tar.gz
-
-RUN apt-get update && apt-get install -y build-essential zlib1g-dev libpcre3 libpcre3-dev unzip
-RUN mkdir ${MODULESDIR}
-RUN cd ${MODULESDIR} && \
+apt-get update && apt-get install -y build-essential zlib1g-dev libpcre3 libpcre3-dev unzip &&
+mkdir ${MODULESDIR} &&
+cd ${MODULESDIR} && \
     wget --no-check-certificate https://github.com/pagespeed/ngx_pagespeed/archive/release-${NPS_VERSION}-beta.zip && \
     unzip release-${NPS_VERSION}-beta.zip && \
     cd ngx_pagespeed-release-${NPS_VERSION}-beta/ && \
     wget --no-check-certificate https://dl.google.com/dl/page-speed/psol/${NPS_VERSION}.tar.gz && \
-    tar -xzvf ${NPS_VERSION}.tar.gz
+    tar -xzvf ${NPS_VERSION}.tar.gz &&
 
 
 # Compile nginx
-RUN cd /usr/src/nginx-${NGINX_VERSION} && ./configure \
+cd /usr/src/nginx-${NGINX_VERSION} && ./configure \
 	--prefix=/etc/nginx \
 	--sbin-path=/usr/sbin/nginx \
 	--conf-path=/etc/nginx/nginx.conf \
@@ -60,11 +56,23 @@ RUN cd /usr/src/nginx-${NGINX_VERSION} && ./configure \
 	--with-sha1='../${OPENSSL_VERSION}' \
  	--with-md5='../${OPENSSL_VERSION}' \
 	--with-openssl='../${OPENSSL_VERSION}' \
-	--add-module=${MODULESDIR}/ngx_pagespeed-release-${NPS_VERSION}-beta
+	--add-module=${MODULESDIR}/ngx_pagespeed-release-${NPS_VERSION}-beta &&
 
-RUN cd /usr/src/nginx-${NGINX_VERSION} && make && make install
+cd /usr/src/nginx-${NGINX_VERSION} && make && make install &&
 
-RUN mkdir -p /etc/nginx/ssl
+mkdir -p /etc/nginx/ssl
+
+
+
+
+
+
+
+
+
+######################################
+
+
 
 #Add custom nginx.conf file
 ADD docker/nginx.conf /etc/nginx/nginx.conf
