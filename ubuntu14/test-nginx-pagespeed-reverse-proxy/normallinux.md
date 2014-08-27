@@ -126,7 +126,7 @@ cd ${MODULESDIR} && \
 
 
 
-# Compile nginx
+# Compile nginx # SIMPLE COMPILE
 cd /usr/src/nginx-${NGINX_VERSION} && ./configure \
 	--prefix=/etc/nginx \
 	--sbin-path=/usr/sbin/nginx \
@@ -147,23 +147,56 @@ cd /usr/src/nginx-${NGINX_VERSION} && ./configure \
 	--with-http_random_index_module \
 	--with-http_secure_link_module \
 	--with-http_stub_status_module \
-	--with-mail \
-	--with-mail_ssl_module \
 	--with-file-aio \
 	--with-http_spdy_module \
-	--with-cc-opt='-g -O2 -fstack-protector --param=ssp-buffer-size=4 -Wformat -Wformat-security -Werror=format-security -Wp,-D_FORTIFY_SOURCE=2' \
-	--with-ld-opt='-Wl,-Bsymbolic-functions -Wl,-z,relro -Wl,--as-needed' \
 	--with-ipv6 \
-	--with-sha1='../${OPENSSL_VERSION}' \
- 	--with-md5='../${OPENSSL_VERSION}' \
-	--with-openssl='../${OPENSSL_VERSION}' \
 	--add-module=${MODULESDIR}/ngx_pagespeed-release-${NPS_VERSION}-beta &&
 
 cd /usr/src/nginx-${NGINX_VERSION} && make && make install
 
 
+# Init script
+sudo wget https://raw.github.com/JasonGiedymin/nginx-init-ubuntu/master/nginx -O /etc/init.d/nginx
+sudo chmod +x /etc/init.d/nginx
+
+
+service nginx status  # to poll for current status
+service nginx stop    # to stop any servers if any
+service nginx start   # to start the server
+
+
+
+
 
 ###############################
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
