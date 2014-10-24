@@ -27,7 +27,6 @@ ADD ./config.hdf /var/www/vhosts/laravel/config.hdf
 
 # Initialization and Startup Script
 ADD ./start.sh /start.sh
-RUN chmod 755 /start.sh
 
 # private expose
 EXPOSE 80
