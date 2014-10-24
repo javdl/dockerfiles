@@ -1,4 +1,4 @@
-FROM joostlaan/trusty-baseimage-nginx-hhvm
+FROM joostlaan/baseimage-nginx-hhvm
 MAINTAINER Joost van der Laan <joostvanderlaan@gmail.com>
 
 # Laravel requirements
