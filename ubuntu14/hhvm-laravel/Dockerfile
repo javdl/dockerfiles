@@ -27,7 +27,3 @@ ADD ./config.hdf /var/www/vhosts/laravel/config.hdf
 # Initialization and Startup Script
 ADD ./start.sh /start.sh
 
-# private expose
-EXPOSE 80
-
-CMD ["/bin/bash", "/start.sh"]
